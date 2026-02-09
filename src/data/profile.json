@@ -1,0 +1,73 @@
+{
+    "personal": {
+        "name": "Alexander Johnson",
+        "title": "Senior Partner • Digital Strategy",
+        "phone": "+14155550199",
+        "email": "alex@alexanderjohnson.co",
+        "location": "San Francisco • New York • London",
+        "bio": "Guiding Fortune 500 companies through digital transformation with 15+ years of strategic leadership. Focused on sustainable innovation and measurable impact.",
+        "services": [
+            {
+                "title": "Digital Strategy",
+                "description": "End-to-end digital transformation frameworks",
+                "icon": "📈"
+            },
+            {
+                "title": "Executive Advisory",
+                "description": "C-suite level technology and innovation guidance",
+                "icon": "👔"
+            },
+            {
+                "title": "Board Consulting",
+                "description": "Corporate governance and digital oversight",
+                "icon": "🏛️"
+            },
+            {
+                "title": "M&A Technology Due Diligence",
+                "description": "Technical assessment for corporate acquisitions",
+                "icon": "🤝"
+            }
+        ],
+        "socialLinks": {
+            "linkedin": "https://linkedin.com/in/alexanderjohnson",
+            "twitter": "https://twitter.com/aj_strategy",
+            "website": "https://alexanderjohnson.co",
+            "calendar": "https://cal.com/alexjohnson",
+            "github": "https://github.com/alexjohnson"
+        },
+        "trust": {
+            "certifications": [
+                "MIT Sloan Executive Certification",
+                "Stanford GSB - Executive Leadership",
+                "Project Management Institute - PMP",
+                "Digital Transformation Specialist",
+                "Board Leadership Certification"
+            ],
+            "clients": [
+                "Fortune 100 Companies",
+                "Global 2000 Enterprises",
+                "Tech Unicorn Startups",
+                "Private Equity Firms",
+                "Government Agencies"
+            ],
+            "experience": "15+ years executive leadership",
+            "awards": [
+                "Top 100 Digital Leaders 2023",
+                "Innovation Excellence Award 2022",
+                "Digital Strategy Leader of the Year",
+                "Client Choice Award - 5 consecutive years"
+            ],
+            "metrics": {
+                "years": 15,
+                "clients": 50,
+                "retention": 99,
+                "projects": 100
+            }
+        },
+        "seo": {
+            "title": "Alexander Johnson | Digital Strategy Executive",
+            "description": "Executive digital strategy consultant with 15+ years experience transforming Fortune 500 companies. Available for board advisory and digital transformation guidance.",
+            "keywords": "digital strategy, executive advisor, board consulting, digital transformation, Fortune 500 consultant"
+        }
+    }
+}
