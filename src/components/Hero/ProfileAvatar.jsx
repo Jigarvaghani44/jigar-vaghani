@@ -2,6 +2,8 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import ClientPhoto from "@/assets/clientPhoto.png";
+import Jekil1 from "@/assets/jekil1.png";
+import Jekil2 from "@/assets/jekil2.png";
 
 export default function ProfileAvatar({ theme }) {
     const [isHovered, setIsHovered] = useState(false)
@@ -33,7 +35,7 @@ export default function ProfileAvatar({ theme }) {
                 whileHover={{ scale: 1.05 }}
                 onHoverStart={() => setIsHovered(true)}
                 onHoverEnd={() => setIsHovered(false)}
-                className="relative w-48 h-48 rounded-full border-8 border-white dark:border-gray-900 overflow-hidden shadow-2xl"
+                className="relative w-64 h-64 lg:w-80 lg:h-80 rounded-full border-8 border-white dark:border-gray-900 overflow-hidden shadow-2xl"
             >
                 {/* Profile Image */}
                 <div
@@ -41,7 +43,7 @@ export default function ProfileAvatar({ theme }) {
                 >
                     {/* Fallback Initials */}
                     <img
-                        src={ClientPhoto}
+                        src={Jekil2}
                         alt="Profile Avatar"
                         className="w-full h-full object-cover"
                     />

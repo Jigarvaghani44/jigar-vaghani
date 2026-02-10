@@ -6,7 +6,7 @@ const WhatsAppButton = () => {
     const [isHovered, setIsHovered] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
 
-    const phoneNumber = '9123456789'; // Replace with your actual phone number
+    const phoneNumber = '61450290914'; // Replace with your actual phone number
     const message = 'Hello, I have a question about your services';
 
     const handleClick = () => {

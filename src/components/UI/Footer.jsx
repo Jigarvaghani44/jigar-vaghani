@@ -27,7 +27,7 @@ export default function Footer() {
     const [phone] = useState('+61 2 8888 8888')
 
     return (
-        <footer className="relative bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800 text-white overflow-hidden">
+        <footer className="relative bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800  dark:from-blue-900 dark:via-gray-800 dark:to-gray-900 text-white overflow-hidden">
             {/* Australian Building Skyline Background */}
             <div className="absolute bottom-0 left-0 right-0 h-20">
 
