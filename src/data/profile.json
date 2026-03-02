@@ -1,61 +1,61 @@
 {
     "personal": {
-        "name": "Jekil Satani",
-        "title": "Senior Partner • Digital Strategy",
-        "phone": "+61450290914",
-        "email": "satanijekil2002@gmail.com",
-        "location": "Melbourne • Victoria •  Australia",
-        "bio": "Guiding Fortune 500 companies through digital transformation with 15+ years of strategic leadership. Focused on sustainable innovation and measurable impact.",
+        "name": "Alexander Johnson",
+        "title": "Senior Partner • Real Estate Strategy",
+        "phone": "+14155550199",
+        "email": "alex@alexanderjohnson.co",
+        "location": "San Francisco • New York • London",
+        "bio": "Advising global investors, developers, and institutions on premium real estate investments and asset growth strategies with 15+ years of leadership in commercial and luxury property markets.",
         "services": [
             {
-                "title": "Digital Strategy",
-                "description": "End-to-end digital transformation frameworks",
-                "icon": "📈"
+                "title": "Real Estate Investment Strategy",
+                "description": "End-to-end property investment and portfolio growth planning",
+                "icon": "🏢"
             },
             {
-                "title": "Executive Advisory",
-                "description": "C-suite level technology and innovation guidance",
-                "icon": "👔"
+                "title": "Luxury Property Advisory",
+                "description": "Strategic guidance for high-value residential and commercial acquisitions",
+                "icon": "🏡"
             },
             {
-                "title": "Board Consulting",
-                "description": "Corporate governance and digital oversight",
-                "icon": "🏛️"
+                "title": "Real Estate Portfolio Consulting",
+                "description": "Optimization and expansion strategies for institutional portfolios",
+                "icon": "📊"
             },
             {
-                "title": "M&A Technology Due Diligence",
-                "description": "Technical assessment for corporate acquisitions",
+                "title": "Property Due Diligence",
+                "description": "Market, legal, and financial assessment for real estate acquisitions",
                 "icon": "🤝"
             }
         ],
         "socialLinks": {
             "linkedin": "https://linkedin.com/in/alexanderjohnson",
             "twitter": "https://twitter.com/aj_strategy",
-            "website": "https://jekilsatani.me.co",
+            "website": "https://alexanderjohnson.co",
             "calendar": "https://cal.com/alexjohnson",
             "github": "https://github.com/alexjohnson"
         },
         "trust": {
             "certifications": [
-                "MIT Sloan Executive Certification",
-                "Stanford GSB - Executive Leadership",
-                "Project Management Institute - PMP",
-                "Digital Transformation Specialist",
-                "Board Leadership Certification"
+                "Certified Commercial Investment Member (CCIM)",
+                "Real Estate Investment Analysis Certification",
+                "Luxury Property Specialist Certification",
+                "Urban Land Institute - Real Estate Leadership",
+                "Property Development & Asset Management Certification"
             ],
             "clients": [
-                "Fortune 100 Companies",
-                "Global 2000 Enterprises",
-                "Tech Unicorn Startups",
-                "Private Equity Firms",
-                "Government Agencies"
+                "Global Real Estate Investors",
+                "Luxury Property Developers",
+                "Institutional Investment Firms",
+                "Private Equity Real Estate Funds",
+                "High-Net-Worth Individuals"
             ],
-            "experience": "15+ years executive leadership",
+            "experience": "15+ years real estate leadership",
             "awards": [
-                "Top 100 Digital Leaders 2023",
-                "Innovation Excellence Award 2022",
-                "Digital Strategy Leader of the Year",
-                "Client Choice Award - 5 consecutive years"
+                "Top Real Estate Advisor 2023",
+                "Global Property Excellence Award 2022",
+                "Investment Strategy Leader of the Year",
+                "Client Trust Award - 5 consecutive years"
             ],
             "metrics": {
                 "years": 15,
@@ -65,9 +65,9 @@
             }
         },
         "seo": {
-            "title": "Alexander Johnson | Digital Strategy Executive",
-            "description": "Executive digital strategy consultant with 15+ years experience transforming Fortune 500 companies. Available for board advisory and digital transformation guidance.",
-            "keywords": "digital strategy, executive advisor, board consulting, digital transformation, Fortune 500 consultant"
+            "title": "Alexander Johnson | Real Estate Strategy Advisor",
+            "description": "Global real estate strategist helping investors and developers grow premium property portfolios with 15+ years of experience in luxury and commercial real estate.",
+            "keywords": "real estate strategy, property investment advisor, luxury real estate consultant, commercial real estate expert, real estate portfolio consulting"
         }
     }
 }

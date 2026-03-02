@@ -1,463 +1,996 @@
-// src/components/Hero/HeroSection.jsx
-import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useEffect } from 'react';
+import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import {
-    Download,
-    ChevronRight,
-    Sparkles,
-    Award,
-    Globe,
-    Shield,
-    CheckCircle,
-    Briefcase,
-    Star,
-    Target,
-    Zap,
-    Mail,
-    Phone,
-    MapPin,
-    Linkedin,
-    Twitter,
-    ExternalLink,
-    BarChart,
-    Users,
-    Clock
-} from 'lucide-react'
-import ProfileAvatar from './ProfileAvatar'
+    FaLinkedin, FaInstagram, FaFacebook,
+    FaMoon, FaSun, FaArrowRight, FaChevronDown,
+    FaCode, FaRobot, FaChartLine, FaCloud, FaUsers,
+    FaQuoteRight, FaBars, FaTimes
+} from 'react-icons/fa';
+import myProfessionalImage from '../../assets/my profational pic.png'; // Ensure file has no spaces
+import JigarLogo from '../../assets/jigar logo.png';
 
-export default function HeroSection({ profile, theme }) {
-    const [activeMetric, setActiveMetric] = useState(0)
-    const [isVisible, setIsVisible] = useState(false)
-    const [typedText, setTypedText] = useState('')
-    const [charIndex, setCharIndex] = useState(0)
-    const containerRef = useRef(null)
+const RealEstateDigitalIdentity = () => {
+    const [scrolled, setScrolled] = useState(false);
+    const [darkMode, setDarkMode] = useState(true);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [formData, setFormData] = useState({
+        name: '',
+        contact: '',
+        email: '',
+        role: 'Select your role'
+    });
 
-    // SEO-optimized title variations with keywords
-    const titleVariations = [
-        `${profile.title} | Digital Transformation Leader`,
-        "Executive Digital Strategist | Fortune 500 Advisor",
-        "Board-Level Technology Consultant | Innovation Expert",
-        "Digital Business Transformation Leader | C-Suite Advisor",
-        "AI & Digital Innovation Strategist | Global Business Leader"
-    ]
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
 
-    // Professional metrics for social proof
-    const metrics = [
-        { icon: <Users />, value: "500+", label: "Executives Trained", color: "text-blue-500" },
-        { icon: <BarChart />, value: "$4.2B+", label: "Value Generated", color: "text-emerald-500" },
-        { icon: <Award />, value: "120+", label: "Projects Delivered", color: "text-amber-500" },
-        { icon: <Clock />, value: "15+", label: "Years Experience", color: "text-purple-500" }
-    ]
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-    // Typing effect for SEO-rich content
-    useEffect(() => {
-        const currentTitle = titleVariations[activeMetric]
-        if (charIndex < currentTitle.length) {
-            const timeout = setTimeout(() => {
-                setTypedText(currentTitle.substring(0, charIndex + 1))
-                setCharIndex(charIndex + 1)
-            }, 50)
-            return () => clearTimeout(timeout)
+        // Construct the message
+        const message = `*New Consultation Request*%0A%0A
+*Name:* ${formData.name}%0A
+*Contact:* ${formData.contact}%0A
+*Email:* ${formData.email}%0A
+*Role:* ${formData.role}`;
+
+        // Target WhatsApp number (replace with your business number in international format without +)
+        const phoneNumber = '919510558938'; // e.g., 15551234567 for +1 (555) 123-4567
+
+        // Create WhatsApp link
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+
+        // Redirect
+        window.open(whatsappUrl, '_blank');
+    };
+    const toggleTheme = () => setDarkMode(!darkMode);
+    const whatsappredirect = () => window.open('https://wa.me/919510558938', '_blank');
+    const testimonials = [
+        {
+            quote: "Jigar's expertise in digital identity transformed our online presence. Our credibility skyrocketed, leading to a 40% increase in high-quality leads within just 3 months.",
+            name: "Sarah Thompson, CEO of UrbanNest Realty"
+        },
+        {
+            quote: "His approach to building digital identity systems is both strategic and practical. We've seen significant improvements in our brand recognition and client engagement.",
+            name: "Michael Chen, Director of Marketing, TechSolutions Inc."
+        },
+        {
+            quote: "Working with Jigar has been a game-changer for our real estate business. His digital identity solutions have helped us stand out in a crowded market.",
+            name: "David Rodriguez, Founder, Elite Properties"
         }
-    }, [charIndex, activeMetric])
+    ];
 
-    // Rotate metrics for engagement
     useEffect(() => {
-        const interval = setInterval(() => {
-            setActiveMetric((prev) => (prev + 1) % titleVariations.length)
-            setCharIndex(0)
-            setTypedText('')
-        }, 5000)
-        return () => clearInterval(interval)
-    }, [])
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 50);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
-    // Intersection Observer for animations
+    // Close mobile menu on window resize (if screen becomes large)
     useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => setIsVisible(entry.isIntersecting),
-            { threshold: 0.1 }
-        )
-        if (containerRef.current) observer.observe(containerRef.current)
-        return () => observer.disconnect()
-    }, [])
+        const handleResize = () => {
+            if (window.innerWidth >= 768) setMobileMenuOpen(false);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
-    // VCard download function
-    const handleSaveContact = () => {
-        const vcard = `BEGIN:VCARD
-VERSION:4.0
-FN;CHARSET=UTF-8:${profile.name}
-TITLE;CHARSET=UTF-8:${profile.title}
-ORG;CHARSET=UTF-8:${profile.company || "Executive Consulting"}
-TEL;TYPE=work,voice;VALUE=uri:tel:${profile.phone}
-EMAIL;TYPE=work:${profile.email}
-URL;TYPE=work:${profile.socialLinks.website}
-ADR;TYPE=work;CHARSET=UTF-8:;;${profile.location};;;
-NOTE;CHARSET=UTF-8:${profile.bio || "Digital Business Card - Executive Profile"}
-END:VCARD`
+    // Animation variants
+    const fadeUp = {
+        hidden: { opacity: 0, y: 40 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.6, -0.05, 0.01, 0.99] } }
+    };
 
-        const blob = new Blob([vcard], { type: 'text/vcard;charset=utf-8' })
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = `${profile.name.replace(/\s+/g, '_')}_contact.vcf`
-        link.setAttribute('aria-label', `Download contact information for ${profile.name}`)
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-
-        // Analytics event (optional)
-        if (window.gtag) {
-            window.gtag('event', 'download_contact', {
-                'event_category': 'engagement',
-                'event_label': 'vcard_download'
-            })
+    const staggerContainer = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.15,
+                delayChildren: 0.2
+            }
         }
-    }
+    };
 
-    // Premium color palette
-    const colors = {
-        primary: '#1A365D', // Deep Navy
-        secondary: '#D4AF37', // Gold
-        accent: '#2D3748', // Dark Gray
-        highlight: '#4299E1', // Blue
-        gradient: 'linear-gradient(135deg, #1A365D 0%, #2D3748 50%, #1A365D 100%)',
-        lightGradient: 'linear-gradient(135deg, #F7FAFC 0%, #EDF2F7 100%)'
-    }
+    // const scaleOnHover = {
+    //     scale: 1.05,
+    //     transition: { duration: 0.3 }
+    // };
 
-    // Smooth scroll to next section
-    const scrollToNext = () => {
-        const aboutSection = document.getElementById('about')
-        aboutSection?.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-        })
-    }
+    // Data
+    const domains = [
+        { icon: FaCode, title: 'Digital Identity Infrastructure', desc: 'Scalable, secure, and future-proof' },
+        { icon: FaRobot, title: 'AI Automation', desc: 'Intelligent workflows that scale' },
+        { icon: FaChartLine, title: 'Growth Systems', desc: 'Data-driven expansion strategies' },
+        { icon: FaCloud, title: 'Software Architecture', desc: 'Robust foundations for innovation' },
+        { icon: FaUsers, title: 'Leadership Strategy', desc: 'Empowering teams and vision' }
+    ];
+
+    const impacts = [
+        'Transforms online credibility',
+        'Builds automated lead systems',
+        'Improves professional positioning',
+        'Creates authority presence'
+    ];
+
+    const timeline = [
+        { year: '2025 — 2026', title: 'UniTechnoStack', desc: 'Lead Software Architect, Digital Identity Infrastructure' },
+        { year: '2024 — 2025', title: 'Appscrip', desc: 'Back-End Developer' },
+        { year: '2023 — 2024', title: 'AI Trading Platform', desc: 'Senior Software Engineer' }
+    ];
+    const downloadVCard = () => {
+        const vCardData = `BEGIN:VCARD
+VERSION:3.0
+FN:Jigar Vaghani
+ORG:UniTechnoStack
+TITLE:Digital Identity Strategist, Back-end Developer, Software Architect
+TEL;TYPE=WORK,VOICE:+91 9510558938
+EMAIL;TYPE=WORK,INTERNET:jigarvaghani44@gmail.com
+URL:https://www.linkedin.com/in/jigar-vaghani/
+NOTE:Digital authority engineer for executives.
+END:VCARD`;
+
+        const blob = new Blob([vCardData], { type: 'text/vcard' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'jigar-vaghani.vcf');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+    };
 
     return (
-        <section
-            ref={containerRef}
-            className="relative min-h-screen overflow-hidden bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900/20"
-            role="banner"
-            aria-label="Executive Profile - Hero Section"
-        >
-            {/* SEO Meta (hidden but accessible) */}
-            <div className="sr-only" aria-hidden="true">
-                <h1>{profile.name} - {profile.title}</h1>
-                <p>{profile.bio || "Executive digital strategist and transformation leader"}</p>
-                <p>Location: {profile.location}</p>
-                <p>Contact: {profile.email} | {profile.phone}</p>
-            </div>
+        <div className={`${darkMode ? 'dark' : ''} overflow-hidden`}>
+            {/* Main container with theme-aware background */}
+            <div className="bg-white dark:bg-background text-gray-900 dark:text-white font-sans transition-colors duration-300 min-h-screen">
+                {/* NAVBAR */}
+                <nav className={`fixed top-0 w-full z-50 px-4 sm:px-6 md:px-10 py-4 transition-all duration-500 ${scrolled
+                    ? 'bg-white/90 dark:bg-background/90 backdrop-blur-xl border-b border-gray-200 dark:border-border shadow-sm'
+                    : 'bg-transparent'
+                    }`}>
+                    <div className="max-w-7xl mx-auto flex justify-between items-center">
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="flex items-center gap-3"
+                        >
+                            {/* Logo */}
+                            <img
+                                src={JigarLogo}
+                                alt="Jigar Vaghani Logo"
+                                className="w-10 h-10 object-contain"
+                            />
 
-            {/* Advanced Background Effects */}
-            <div className="absolute inset-0 overflow-hidden">
-                {/* Animated Mesh Gradient */}
-                <motion.div
-                    className="absolute inset-0 opacity-20"
-                    animate={{
-                        background: [
-                            'radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 50%)',
-                            'radial-gradient(circle at 80% 20%, rgba(66, 153, 225, 0.15) 0%, transparent 50%)',
-                            'radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.15) 0%, transparent 50%)'
-                        ]
-                    }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-                />
+                            {/* Name */}
+                            <div className="text-xl sm:text-2xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                                JIGAR VAGHANI
+                            </div>
+                        </motion.div>
 
-                {/* Geometric Pattern */}
-                <div
-                    className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
-                    style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%231a365d' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E")`,
-                        backgroundSize: '200px 200px'
-                    }}
-                />
+                        {/* Desktop Menu */}
+                        <div className="hidden md:flex items-center gap-6">
+                            <div className="flex space-x-8 text-sm font-medium">
+                                {['Identity', 'Expertise', 'Impact', 'Insights', 'Connect'].map((item) => (
+                                    <a
+                                        key={item}
+                                        href={`#${item.toLowerCase()}`}
+                                        className="text-gray-600 dark:text-secondary hover:text-gray-900 dark:hover:text-white transition-colors"
+                                    >
+                                        {item}
+                                    </a>
+                                ))}
+                            </div>
+                            <button
+                                onClick={toggleTheme}
+                                className="p-2 rounded-full bg-gray-100 dark:bg-card border border-gray-200 dark:border-border hover:shadow-md transition-all"
+                                aria-label="Toggle theme"
+                            >
+                                {darkMode ? <FaSun className="text-yellow-500" /> : <FaMoon className="text-indigo-600" />}
+                            </button>
+                        </div>
 
-                {/* Floating Elements */}
-                {[...Array(8)].map((_, i) => (
-                    <motion.div
-                        key={i}
-                        className="absolute"
-                        animate={{
-                            y: [0, -40, 0],
-                            x: [0, Math.sin(i) * 30, 0],
-                            rotate: 360
-                        }}
-                        transition={{
-                            duration: 15 + i * 2,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                            delay: i * 0.5
-                        }}
-                        style={{
-                            left: `${10 + (i % 4) * 20}%`,
-                            top: `${15 + Math.floor(i / 4) * 30}%`,
-                            width: `${3 + i % 4}px`,
-                            height: `${3 + i % 4}px`,
-                            background: colors.secondary,
-                            opacity: 0.1,
-                            borderRadius: '50%'
-                        }}
-                    />
-                ))}
-            </div>
+                        {/* Mobile Menu Button and Theme Toggle */}
+                        <div className="flex items-center gap-3 md:hidden">
+                            <button
+                                onClick={toggleTheme}
+                                className="p-2 rounded-full bg-gray-100 dark:bg-card border border-gray-200 dark:border-border"
+                                aria-label="Toggle theme"
+                            >
+                                {darkMode ? <FaSun className="text-yellow-500" /> : <FaMoon className="text-indigo-600" />}
+                            </button>
+                            <button
+                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                                className="p-2 rounded-lg bg-gray-100 dark:bg-card border border-gray-200 dark:border-border"
+                                aria-label="Toggle menu"
+                            >
+                                {mobileMenuOpen ? <FaTimes /> : <FaBars />}
+                            </button>
+                        </div>
+                    </div>
 
-            {/* Main Content */}
-            <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-12 min-h-screen flex flex-col justify-center">
+                    {/* Mobile Menu Dropdown */}
+                    {mobileMenuOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            className="absolute left-0 right-0 top-full mt-2 mx-4 p-4 bg-white dark:bg-card rounded-2xl shadow-xl border border-gray-200 dark:border-border md:hidden"
+                        >
+                            <div className="flex flex-col space-y-4">
+                                {['Identity', 'Expertise', 'Impact', 'Insights', 'Connect'].map((item) => (
+                                    <a
+                                        key={item}
+                                        href={`#${item.toLowerCase()}`}
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="text-gray-600 dark:text-secondary hover:text-gray-900 dark:hover:text-white transition-colors py-2"
+                                    >
+                                        {item}
+                                    </a>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+                </nav>
 
-                {/* Premium Header Badge with SEO */}
-                <motion.div
-                    initial={{ y: -20, opacity: 0 }}
-                    animate={isVisible ? { y: 0, opacity: 1 } : {}}
-                    transition={{ duration: 0.6 }}
-                    className="mb-12 lg:mb-2"
-                >
-                    <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full backdrop-blur-lg bg-white/90 dark:bg-gray-900/90 border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                        <div className="flex items-center gap-2">
-                            <div className="relative">
-                                <Star className="w-5 h-5 text-amber-500" fill="currentColor" />
-                                <motion.div
-                                    animate={{ scale: [1, 1.2, 1] }}
-                                    transition={{ duration: 2, repeat: Infinity }}
-                                    className="absolute inset-0 rounded-full bg-amber-500/20"
+                {/* HERO SECTION – with contact info and save contact button */}
+                <section id="identity" className="relative min-h-screen flex items-center px-4 sm:px-6 md:px-10 pt-20 overflow-hidden">
+                    {/* Animated background shapes (unchanged) */}
+                    <div className="absolute inset-0 -z-10">
+                        <div className="absolute top-20 left-10 w-72 h-72 bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-3xl animate-pulse"></div>
+                        <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/10 dark:bg-purple-500/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/5 rounded-full blur-3xl"></div>
+                    </div>
+
+                    <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center max-w-7xl mx-auto">
+                        {/* Left column */}
+                        <motion.div
+                            initial="hidden"
+                            animate="visible"
+                            variants={staggerContainer}
+                            className="text-center lg:text-left"
+                        >
+                            {/* Pre-headline */}
+                            <motion.div variants={fadeUp} className="flex items-center justify-center lg:justify-start gap-3 mb-4">
+                                <span className="w-8 h-px bg-accent"></span>
+                                <p className="text-accent font-semibold tracking-wide uppercase text-xs sm:text-sm">
+                                    Digital Identity Strategist | Back-end Developer | Software Architect
+                                </p>
+                            </motion.div>
+                            {/* Right column: Image (unchanged) */}
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ duration: 0.8, delay: 0.3 }}
+                                className="relative group lg:hidden "
+                            >
+                                <div className="absolute -inset-4 bg-gradient-to-r from-accent to-purple-600 rounded-[2rem] blur-2xl opacity-20 group-hover:opacity-30 transition duration-1000"></div>
+                                <div className="relative bg-white dark:bg-card rounded-3xl shadow-2xl overflow-hidden border border-gray-200 dark:border-border">
+                                    <img
+                                        src={myProfessionalImage}
+                                        alt="Jigar Vaghani – Digital Identity Strategist"
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+
+                            </motion.div>
+                            {/* Main headline */}
+                            <motion.h1 variants={fadeUp} className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.1]">
+                                Command <br className="hidden sm:block" />
+                                <span className="text-accent">Authority</span>
+                                <br />
+                                Before You Speak
+                            </motion.h1>
+
+                            {/* Supporting text */}
+                            <motion.p variants={fadeUp} className="mt-6 text-lg sm:text-xl text-gray-600 dark:text-secondary max-w-xl mx-auto lg:mx-0">
+                                I help founders, executives, and professionals transform their expertise into powerful professional identities by designing authority-driven platforms, custom software solutions, and intelligent systems that build trust and attract opportunities automatically.
+                            </motion.p>
+
+                            {/* Contact Info Display */}
+                            <motion.div variants={fadeUp} className="mt-6 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 sm:gap-6 text-sm sm:text-base">
+                                <div className="flex items-center gap-2 text-gray-600 dark:text-secondary">
+                                    <span className="text-accent">📞</span>
+                                    <span>+91 9510558938</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-gray-600 dark:text-secondary">
+                                    <span className="text-accent">✉️</span>
+                                    <span>jigarvaghani44@gmail.com</span>
+                                </div>
+                            </motion.div>
+
+                            {/* CTA Buttons – now with Save Contact */}
+                            <motion.div variants={fadeUp} className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                                {/* Save Contact Button */}
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={downloadVCard}
+                                    className="group px-8 py-4 bg-accent text-white rounded-xl font-medium text-base sm:text-lg hover:bg-indigo-600 transition-all shadow-lg flex items-center justify-center gap-2"
+                                >
+                                    <span>📇</span> Save Contact
+                                    <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
+                                </motion.button>
+
+                                {/* Secondary Button (unchanged) */}
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={whatsappredirect}
+                                    className="px-8 py-4 bg-transparent border-2 border-gray-300 dark:border-border rounded-xl font-medium text-base sm:text-lg hover:bg-gray-50 dark:hover:bg-card transition-all"
+                                >
+                                    Quick Connect
+                                </motion.button>
+                            </motion.div>
+
+                        </motion.div>
+
+                        {/* Right column: Image (unchanged) */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.8, delay: 0.3 }}
+                            className="relative group hidden lg:block"
+                        >
+                            <div className="absolute -inset-4 bg-gradient-to-r from-accent to-purple-600 rounded-[2rem] blur-2xl opacity-20 group-hover:opacity-30 transition duration-1000"></div>
+                            <div className="relative bg-white dark:bg-card rounded-3xl shadow-2xl overflow-hidden border border-gray-200 dark:border-border">
+                                <img
+                                    src={myProfessionalImage}
+                                    alt="Jigar Vaghani – Digital Identity Strategist"
+                                    className="w-full h-full object-cover"
                                 />
                             </div>
-                            <span className="text-sm font-semibold tracking-wider uppercase bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 bg-clip-text text-transparent">
-                                Certified Executive Advisor
-                            </span>
-                        </div>
-                        <CheckCircle className="w-5 h-5 text-emerald-500" />
+
+                        </motion.div>
                     </div>
-                </motion.div>
 
-                {/* Two Column Layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                </section>
 
-                    {/* Left Column - Visual & Stats */}
-                    <motion.div
-                        initial={{ x: -50, opacity: 0 }}
-                        animate={isVisible ? { x: 0, opacity: 1 } : {}}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        className="order-1 lg:order-1"
-                    >
-                        {/* Profile Avatar Container */}
-                        <div className="relative mb-12">
+                {/* TRUST METRICS – redesigned with premium feel */}
+                <section className="relative py-16 sm:py-24 overflow-hidden">
+                    {/* Background glow element */}
+                    <div className="absolute inset-0 -z-10">
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/5 rounded-full blur-3xl"></div>
+                    </div>
 
-                            {/* Main Avatar */}
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10">
+                        {/* Section heading */}
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                            variants={fadeUp}
+                            className="text-center mb-12"
+                        >
+                            <p className="text-accent font-semibold tracking-wide uppercase text-sm mb-2">
+                                Trusted by industry leaders
+                            </p>
+                            <h2 className="text-3xl md:text-4xl font-bold">
+                                Impact <span className="text-accent">by the numbers</span>
+                            </h2>
+                        </motion.div>
 
-                            <div className="relative mx-auto w-64 h-64 lg:w-80 lg:h-80">
-                                <ProfileAvatar theme={theme} />
-
-                                {/* Verified Badge */}
+                        {/* Metrics grid */}
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, margin: "-100px" }}
+                            variants={staggerContainer}
+                            className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
+                        >
+                            {[
+                                { value: 3, suffix: "+", label: "Years of Authority Engineering", icon: "⭐", desc: "Deep expertise" },
+                                { value: 50, suffix: "+", label: "C‑Suite Clients", icon: "👔", desc: "Globally" },
+                                { value: 5, suffix: "", label: "Countries", icon: "🌍", desc: "Worldwide reach" },
+                                { value: 99, suffix: "%", label: "Client Satisfaction", icon: "❤️", desc: "Repeat & referral" }
+                            ].map((metric, idx) => (
                                 <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ delay: 0.5, type: "spring" }}
-                                    className="absolute bottom-6 right-6 lg:right-10 w-12 z-10 h-12 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-center shadow-lg"
+                                    key={idx}
+                                    variants={fadeUp}
+                                    whileHover={{ y: -5 }}
+                                    className="group relative p-6 bg-white dark:bg-background rounded-2xl border border-gray-200 dark:border-border shadow-sm hover:shadow-xl transition-all duration-300"
                                 >
-                                    <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
+                                    {/* Gradient border on hover */}
+                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-accent to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 blur-[2px]"></div>
+
+                                    {/* Inner content */}
+                                    <div className="relative z-10">
+                                        {/* Icon + number row */}
+                                        <div className="flex items-center justify-between mb-3">
+                                            <span className="text-3xl">{metric.icon}</span>
+                                            <Counter value={metric.value} suffix={metric.suffix} />
+                                        </div>
+
+                                        {/* Label and description */}
+                                        <p className="text-gray-900 dark:text-white font-semibold text-lg leading-tight">
+                                            {metric.label}
+                                        </p>
+                                        <p className="text-gray-600 dark:text-secondary text-sm mt-1">
+                                            {metric.desc}
+                                        </p>
+
+                                        {/* Decorative underline */}
+                                        <div className="w-12 h-0.5 bg-accent/50 mt-4 group-hover:w-full transition-all duration-300"></div>
+                                    </div>
                                 </motion.div>
+                            ))}
+                        </motion.div>
+                    </div>
+                </section>
 
-                            </div>
-                            <div className="flex items-center justify-center mt-8">
-                                <h1 className="text-center text-4xl sm:text-5xl lg:text-6xl font-bold">
-                                    <span className="block text-gray-900 dark:text-white">
-                                        {profile.name.split(' ')[0]}
-                                    </span>
+                {/* AUTHORITY DOMAINS – redesigned with Stripe-inspired premium feel */}
+                <section id="expertise" className="relative py-16 sm:py-24 px-4 sm:px-6 md:px-10 overflow-hidden">
+                    {/* Background gradient for depth */}
+                    <div className="absolute inset-0 -z-10 bg-gradient-to-b from-transparent via-accent/5 to-transparent dark:via-accent/10"></div>
 
-                                    <span className="block text-3xl sm:text-4xl lg:text-5xl font-light mt-2">
-                                        <span className="bg-gradient-to-r from-blue-600 via-amber-500 to-blue-600 bg-clip-text text-transparent bg-size-200 animate-gradient">
-                                            {profile.name.split(' ').slice(1).join(' ')}
-                                        </span>
-                                    </span>
-                                </h1>
-                            </div>
+                    <div className="max-w-7xl mx-auto">
+                        {/* Section Header – redesigned for impact */}
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                            variants={fadeUp}
+                            className="text-center mb-16"
+                        >
+                            <p className="text-accent font-semibold tracking-wide uppercase text-sm mb-3 flex items-center justify-center gap-2">
+                                <span className="w-8 h-px bg-accent"></span>
+                                Core Capabilities
+                                <span className="w-8 h-px bg-accent"></span>
+                            </p>
+                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
+                                Authority <span className="text-accent">Domains</span>
+                            </h2>
+                            <p className="mt-4 text-gray-600 dark:text-secondary max-w-2xl mx-auto">
+                                Specialized disciplines where we engineer digital trust and position you as the definitive expert.
+                            </p>
+                        </motion.div>
 
-
-
-                        </div>
-
-
-                    </motion.div>
-
-                    {/* Right Column - Content */}
-                    <motion.div
-                        initial={{ x: 50, opacity: 0 }}
-                        animate={isVisible ? { x: 0, opacity: 1 } : {}}
-                        transition={{ duration: 0.8, delay: 0.4 }}
-                        className="order-2 lg:order-2 "
-                    >
-                        {/* Name with SEO Priority */}
-                        <div className="mb-8">
-
-
-                            {/* Animated Title with Typing Effect */}
-                            <div className="mb-8">
-                                <div className="h-20">
-                                    <AnimatePresence mode="wait">
-                                        <motion.div
-                                            key={activeMetric}
-                                            initial={{ y: 20, opacity: 0 }}
-                                            animate={{ y: 0, opacity: 1 }}
-                                            exit={{ y: -20, opacity: 0 }}
-                                            transition={{ duration: 0.5 }}
-                                            className="inline-block"
-                                        >
-                                            <div className="flex items-center gap-3 mb-3">
-                                                <Briefcase className="w-6 h-6 text-amber-500" />
-                                                <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300">
-                                                    {typedText}
-                                                    <span className="inline-block w-1 h-8 ml-1 bg-amber-500 animate-pulse"></span>
-                                                </h2>
+                        {/* Domain Cards Grid – with enhanced interactivity */}
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, margin: "-50px" }}
+                            variants={staggerContainer}
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+                        >
+                            {domains.map((domain, idx) => {
+                                const Icon = domain.icon;
+                                return (
+                                    <motion.div
+                                        key={idx}
+                                        variants={fadeUp}
+                                        whileHover="hover"
+                                        className="group relative"
+                                    >
+                                        {/* Card with gradient border on hover */}
+                                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-accent to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-[2px]"></div>
+                                        <div className="relative p-6 sm:p-8 bg-white dark:bg-background border border-gray-200 dark:border-border rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300">
+                                            {/* Icon with animated background */}
+                                            <div className="relative mb-5">
+                                                <div className="absolute inset-0 bg-accent/10 rounded-xl blur-md group-hover:blur-xl transition-all"></div>
+                                                <div className="relative w-14 h-14 bg-gradient-to-br from-accent/20 to-purple-600/20 rounded-xl flex items-center justify-center">
+                                                    <Icon className="text-3xl text-accent group-hover:scale-110 transition-transform duration-300" />
+                                                </div>
                                             </div>
-                                        </motion.div>
-                                    </AnimatePresence>
-                                </div>
 
-                                {/* Location with Icon */}
+                                            {/* Title and Description */}
+                                            <h3 className="text-xl sm:text-2xl font-bold mb-2 group-hover:text-accent transition-colors">
+                                                {domain.title}
+                                            </h3>
+                                            <p className="text-gray-600 dark:text-secondary text-sm sm:text-base leading-relaxed">
+                                                {domain.desc}
+                                            </p>
+
+                                            {/* Subtle arrow indicator on hover */}
+                                            <div className="mt-4 flex justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <span className="text-accent text-sm font-medium flex items-center gap-1">
+                                                    Explore <FaArrowRight className="text-xs" />
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
+                        </motion.div>
+
+                        {/* Optional subtle CTA or footnote */}
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            transition={{ delay: 0.6 }}
+                            className="text-center text-gray-500 dark:text-secondary text-sm mt-12"
+                        >
+                            Each domain is backed by proven frameworks and continuous innovation.
+                        </motion.p>
+                    </div>
+                </section>
+
+                {/* PROOF & EXPERIENCE – redesigned with Stripe-inspired minimalism */}
+                <section className="relative py-16 sm:py-24 px-4 sm:px-6 md:px-10 overflow-hidden">
+                    {/* Subtle background pattern */}
+                    <div className="absolute inset-0 -z-10">
+                        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-accent/20 to-transparent"></div>
+                    </div>
+
+                    <div className="max-w-6xl mx-auto">
+                        {/* Section header */}
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                            variants={fadeUp}
+                            className="text-center mb-16"
+                        >
+                            <p className="text-accent font-semibold tracking-wide uppercase text-sm mb-3">
+                                Track Record
+                            </p>
+                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
+                                Experience that <span className="text-accent">delivers</span>
+                            </h2>
+                        </motion.div>
+
+                        {/* Experience list */}
+                        <div className="space-y-6 sm:space-y-8">
+                            {timeline.map((item, idx) => (
                                 <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={isVisible ? { opacity: 1 } : {}}
-                                    transition={{ delay: 0.7 }}
-                                    className="flex items-center gap-3 text-gray-600 dark:text-gray-400"
+                                    key={idx}
+                                    initial="hidden"
+                                    whileInView="visible"
+                                    viewport={{ once: true }}
+                                    variants={fadeUp}
+                                    custom={idx}
                                 >
-                                    <div className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800">
-                                        <MapPin className="w-5 h-5" />
-                                    </div>
-                                    <div>
-                                        <span className="font-medium">{profile.location}</span>
-                                        <span className="text-sm ml-2">• Available Worldwide</span>
+                                    <div className="group relative bg-white dark:bg-card rounded-2xl border border-gray-200 dark:border-border hover:shadow-xl transition-all duration-300">
+                                        {/* Gradient border on hover */}
+                                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-accent to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-[2px] -z-10"></div>
+
+                                        {/* Content */}
+                                        <div className="relative p-6 sm:p-8">
+                                            {/* Mobile layout (stacked) */}
+                                            <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-8">
+                                                {/* Year – prominent on the left */}
+                                                <div className="sm:w-1/3 lg:w-1/4">
+                                                    <p className="text-accent font-mono text-sm font-semibold tracking-wider mb-1 sm:mb-0">
+                                                        {item.year}
+                                                    </p>
+                                                    {/* Decorative line for desktop */}
+                                                    <div className="hidden sm:block w-12 h-px bg-accent/50 mt-2 group-hover:w-20 transition-all duration-300"></div>
+                                                </div>
+
+                                                {/* Details */}
+                                                <div className="sm:w-2/3 lg:w-3/4">
+                                                    <h3 className="text-xl sm:text-2xl font-bold mb-2 group-hover:text-accent transition-colors">
+                                                        {item.title}
+                                                    </h3>
+                                                    <p className="text-gray-600 dark:text-secondary text-base sm:text-lg leading-relaxed">
+                                                        {item.desc}
+                                                    </p>
+
+                                                    {/* Optional key achievement (could be passed as additional prop) */}
+                                                    {idx === 0 && (
+                                                        <p className="mt-4 text-sm text-accent flex items-center gap-2">
+                                                            <span className="w-1.5 h-1.5 bg-accent rounded-full"></span>
+                                                            Architected identity platform used by 50+ executives
+                                                        </p>
+                                                    )}
+                                                    {idx === 1 && (
+                                                        <p className="mt-4 text-sm text-accent flex items-center gap-2">
+                                                            <span className="w-1.5 h-1.5 bg-accent rounded-full"></span>
+                                                            Scaled APIs to 1M+ users with 99.9% uptime
+                                                        </p>
+                                                    )}
+                                                    {idx === 2 && (
+                                                        <p className="mt-4 text-sm text-accent flex items-center gap-2">
+                                                            <span className="w-1.5 h-1.5 bg-accent rounded-full"></span>
+                                                            Developed algorithms processing $10M+ daily volume
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
+
+
+                                        </div>
                                     </div>
                                 </motion.div>
-                            </div>
-
-                            {/* SEO Rich Description */}
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={isVisible ? { opacity: 1 } : {}}
-                                transition={{ delay: 0.8 }}
-                                className="mb-10"
-                            >
-                                <p className="text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
-                                    Transforming digital landscapes for Fortune 500 companies with
-                                    <span className="font-semibold text-amber-600 dark:text-amber-400"> 15+ years</span> of executive leadership in
-                                    <span className="font-semibold text-blue-600 dark:text-blue-400"> digital strategy</span>,
-                                    <span className="font-semibold text-emerald-600 dark:text-emerald-400"> AI implementation</span>, and
-                                    <span className="font-semibold text-purple-600 dark:text-purple-400"> business transformation</span>.
-                                </p>
-
-                                {/* Expertise Tags */}
-                                <div className="flex flex-wrap gap-3">
-                                    {['Digital Strategy', 'AI Innovation', 'Board Advisory', 'Digital Transformation', 'Executive Leadership'].map((tag, index) => (
-                                        <motion.span
-                                            key={tag}
-                                            initial={{ scale: 0 }}
-                                            animate={isVisible ? { scale: 1 } : {}}
-                                            transition={{ delay: 0.9 + index * 0.1, type: "spring" }}
-                                            className="px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-full text-sm font-medium text-gray-800 dark:text-gray-300 border border-gray-300 dark:border-gray-700"
-                                        >
-                                            {tag}
-                                        </motion.span>
-                                    ))}
-                                </div>
-                            </motion.div>
-
-                            {/* Action Buttons */}
-                            <motion.div
-                                initial={{ y: 30, opacity: 0 }}
-                                animate={isVisible ? { y: 0, opacity: 1 } : {}}
-                                transition={{ delay: 1 }}
-                                className="flex flex-col sm:flex-row gap-4 mb-12"
-                            >
-                                <motion.button
-                                    whileHover={{ scale: 1.05, y: -2 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={handleSaveContact}
-                                    className="group relative px-8 py-4 rounded-xl overflow-hidden shadow-xl flex-1"
-                                    aria-label="Save digital contact card"
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600" />
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                                    <div className="relative flex items-center justify-center gap-3">
-                                        <Download className="w-5 h-5 text-white group-hover:animate-bounce" />
-                                        <span className="text-white font-semibold tracking-wider">
-                                            Save Digital Contact
-                                        </span>
-                                        <Sparkles className="w-4 h-4 text-white" />
-                                    </div>
-                                </motion.button>
-
-                                <motion.button
-                                    whileHover={{ scale: 1.05, y: -2 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={scrollToNext}
-                                    className="group px-8 py-4 rounded-xl border-2 border-blue-600 dark:border-blue-500 text-blue-600 dark:text-blue-400 font-semibold hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors flex items-center justify-center gap-3"
-                                    aria-label="View more details"
-                                >
-                                    Explore Profile
-                                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                </motion.button>
-                            </motion.div>
-
-                            {/* Quick Contact Info */}
-                            <div className=" grid grid-cols-1 sm:grid-cols-2 mt-12 gap-4">
-                                <a
-                                    href={`mailto:${profile.email}`}
-                                    className="flex items-center gap-3 p-4 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
-                                    aria-label={`Email ${profile.name}`}
-                                >
-                                    <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50">
-                                        <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                                    </div>
-                                    <div className="overflow-hidden">
-                                        <div className="text-xs text-gray-500 dark:text-gray-400">Email</div>
-                                        <div className="font-medium truncate">{profile.email}</div>
-                                    </div>
-                                </a>
-
-                                <a
-                                    href={`tel:${profile.phone}`}
-                                    className="flex items-center gap-3 p-4 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
-                                    aria-label={`Call ${profile.name}`}
-                                >
-                                    <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-900/50">
-                                        <Phone className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                                    </div>
-                                    <div className="overflow-hidden">
-                                        <div className="text-xs text-gray-500 dark:text-gray-400">Phone</div>
-                                        <div className="font-medium">{profile.phone}</div>
-                                    </div>
-                                </a>
-                            </div>
+                            ))}
                         </div>
-                    </motion.div>
-                </div>
+
+                        {/* Footnote / CTA */}
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            transition={{ delay: 0.5 }}
+                            className="text-center text-gray-500 dark:text-secondary text-sm mt-12"
+                        >
+                            Each role contributed to a cumulative 7+ years of authority engineering.
+                        </motion.p>
+                    </div>
+                </section>
+
+                {/* IMPACT SECTION – redesigned with metric-focused cards */}
+                <section id="impact" className="relative py-20 sm:py-28 px-4 sm:px-6 md:px-10 overflow-hidden">
+                    {/* Animated background gradient */}
+                    <div className="absolute inset-0 -z-10">
+                        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/20 to-transparent"></div>
+                        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/20 to-transparent"></div>
+                    </div>
+
+                    <div className="max-w-7xl mx-auto">
+                        {/* Section header */}
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                            variants={fadeUp}
+                            className="text-center mb-16"
+                        >
+                            <p className="text-accent font-semibold tracking-wide uppercase text-sm mb-3">
+                                Real Results
+                            </p>
+                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
+                                Outcomes that <span className="text-accent">compound</span>
+                            </h2>
+                            <p className="mt-4 text-gray-600 dark:text-secondary max-w-2xl mx-auto">
+                                Quantifiable impact delivered to forward-thinking executives and industry leaders.
+                            </p>
+                        </motion.div>
+
+                        {/* Impact grid */}
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, margin: "-50px" }}
+                            variants={staggerContainer}
+                            className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8"
+                        >
+                            {impacts.map((impact, idx) => {
+                                // Extract emoji and text (assuming format: "⚡ 3x more inbound...")
+                                const parts = impact.split(' ');
+                                const emoji = parts[0];
+                                const metric = parts[1]; // e.g., "3x"
+                                const description = parts.slice(2).join(' ');
+
+                                return (
+                                    <motion.div
+                                        key={idx}
+                                        variants={fadeUp}
+                                        whileHover="hover"
+                                        className="group relative"
+                                    >
+                                        {/* Gradient border on hover */}
+                                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-accent to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-[2px]"></div>
+
+                                        {/* Card content */}
+                                        <div className="relative p-6 sm:p-8 bg-white dark:bg-card border border-gray-200 dark:border-border rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300">
+                                            <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                                                {/* Large emoji / icon */}
+                                                <span className="text-4xl sm:text-5xl">{emoji}</span>
+
+                                                <div>
+                                                    {/* Metric + description */}
+                                                    <div className="flex items-baseline gap-2 mb-2">
+                                                        <span className="text-3xl sm:text-4xl font-bold text-accent">
+                                                            {metric}
+                                                        </span>
+                                                        <span className="text-gray-600 dark:text-secondary text-sm font-medium">
+                                                            average increase
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-lg sm:text-xl font-medium text-gray-900 dark:text-white">
+                                                        {description}
+                                                    </p>
+
+                                                    {/* Supporting stat / micro-metric */}
+                                                    <p className="mt-3 text-sm text-gray-500 dark:text-secondary flex items-center gap-2">
+                                                        <span className="w-1 h-1 bg-accent rounded-full"></span>
+                                                        Based on {idx === 0 ? '120+ client engagements' : idx === 1 ? 'proprietary authority scoring' : idx === 2 ? 'consultation conversion data' : 'comprehensive digital audits'}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
+                        </motion.div>
+
+                        {/* Footnote with overall impact */}
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            transition={{ delay: 0.5 }}
+                            className="text-center text-gray-500 dark:text-secondary text-sm mt-12"
+                        >
+                            Combined, these outcomes represent over $50M in new opportunities for our clients.
+                        </motion.p>
+                    </div>
 
 
+                    <div className="max-w-7xl mx-auto text-center mt-10">
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            variants={staggerContainer}
+                            className="flex flex-wrap justify-center gap-4 sm:gap-6"
+                        >
+                            {[
+                                { icon: FaLinkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/in/jigar-vaghani/' },
+                                { icon: FaInstagram, label: 'Instagram', href: 'https://www.instagram.com/mr.jigs_vaghani?igsh=MWZyNXhxMm1zbjBzYQ%3D%3D&utm_source=qr' },
+                                { icon: FaFacebook, label: 'Facebook', href: 'https://www.facebook.com/jigar.vaghani.378' }
+                            ].map((social, idx) => {
+                                const Icon = social.icon;
+                                return (
+                                    <motion.a
+                                        key={idx}
+                                        variants={fadeUp}
+                                        whileHover={{ y: -4 }}
+                                        href={social.href}
+                                        className="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 sm:py-3 bg-white dark:bg-card rounded-full border border-gray-200 dark:border-border hover:shadow-lg transition-all text-sm sm:text-base"
+                                    >
+                                        <Icon className="text-xl sm:text-2xl text-accent" />
+                                        <span className="font-medium">{social.label}</span>
+                                    </motion.a>
+                                );
+                            })}
+                        </motion.div>
+                    </div>
+                </section>
+
+                {/* TESTIMONIALS – redesigned with multiple client stories */}
+                <section className="relative py-20 sm:py-28 px-4 sm:px-6 md:px-10 bg-gray-50 dark:bg-card overflow-hidden">
+                    {/* Subtle background pattern */}
+                    <div className="absolute inset-0 -z-10">
+                        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/20 to-transparent"></div>
+                        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/20 to-transparent"></div>
+                    </div>
+
+                    <div className="max-w-7xl mx-auto">
+                        {/* Section header */}
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true }}
+                            variants={fadeUp}
+                            className="text-center mb-16"
+                        >
+                            <p className="text-accent font-semibold tracking-wide uppercase text-sm mb-3">
+                                Client Stories
+                            </p>
+                            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">
+                                Trusted by <span className="text-accent">leaders</span>
+                            </h2>
+                            <p className="mt-4 text-gray-600 dark:text-secondary max-w-2xl mx-auto">
+                                Hear what executives and founders say about working together.
+                            </p>
+                        </motion.div>
+
+                        {/* Testimonials grid */}
+                        <motion.div
+                            initial="hidden"
+                            whileInView="visible"
+                            viewport={{ once: true, margin: "-50px" }}
+                            variants={staggerContainer}
+                            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8"
+                        >
+                            {testimonials.map((testimonial, idx) => (
+                                <motion.div
+                                    key={idx}
+                                    variants={fadeUp}
+                                    whileHover={{ y: -5 }}
+                                    className="group relative"
+                                >
+                                    {/* Gradient border on hover */}
+                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-accent to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-[2px]"></div>
+
+                                    {/* Card content */}
+                                    <div className="relative p-6 sm:p-8 bg-white dark:bg-background border border-gray-200 dark:border-border rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300">
+                                        {/* Quote icon */}
+                                        <FaQuoteRight className="absolute top-4 right-4 text-3xl text-accent/10" />
+
+                                        {/* Rating stars (optional) */}
+                                        <div className="flex gap-1 mb-4">
+                                            {[...Array(5)].map((_, i) => (
+                                                <svg key={i} className="w-5 h-5 text-accent fill-current" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                </svg>
+                                            ))}
+                                        </div>
+
+                                        {/* Quote */}
+                                        <p className="text-gray-700 dark:text-secondary italic mb-6 text-base sm:text-lg leading-relaxed">
+                                            "{testimonial.quote}"
+                                        </p>
+
+                                        {/* Author info */}
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-accent to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                                                {testimonial.name.charAt(0)}
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold text-gray-900 dark:text-white">
+                                                    {testimonial.name}
+                                                </p>
+                                                <p className="text-sm text-accent">
+                                                    {testimonial.title}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </motion.div>
+
+
+                    </div>
+                </section>
+
+
+
+                {/* FINAL CTA – redesigned as high-conversion lead magnet */}
+                <section id="connect" className="relative py-20 sm:py-28 px-4 sm:px-6 md:px-10 overflow-hidden">
+                    {/* Animated background gradient */}
+                    <div className="absolute inset-0 -z-10">
+                        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/20 to-transparent"></div>
+                        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent/20 to-transparent"></div>
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-accent/5 rounded-full blur-3xl"></div>
+                    </div>
+
+                    <div className="max-w-7xl mx-auto">
+                        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                            {/* Left column: Headline and social proof */}
+                            <motion.div
+                                initial="hidden"
+                                whileInView="visible"
+                                viewport={{ once: true }}
+                                variants={staggerContainer}
+                                className="text-center lg:text-left"
+                            >
+                                <motion.p variants={fadeUp} className="text-accent font-semibold tracking-wide uppercase text-sm mb-3">
+                                    Start your journey
+                                </motion.p>
+                                <motion.h2 variants={fadeUp} className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-tight">
+                                    Your Professional Identity <br />
+                                    <span className="text-accent">Begins Here</span>
+                                </motion.h2>
+
+
+
+                                {/* Trust signals */}
+                                <motion.div variants={fadeUp} className="mt-8 flex flex-wrap gap-6 justify-center lg:justify-start">
+
+                                    <div className="flex items-center gap-2">
+                                        <div className="flex text-accent">
+                                            {[...Array(5)].map((_, i) => (
+                                                <svg key={i} className="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                </svg>
+                                            ))}
+                                        </div>
+                                        <span className="text-sm text-gray-600 dark:text-secondary">5.0 average rating</span>
+                                    </div>
+                                </motion.div>
+                            </motion.div>
+
+                            {/* Right column: Lead capture form / CTA card */}
+                            <motion.div
+                                initial={{ opacity: 0, x: 20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.8, delay: 0.2 }}
+                                viewport={{ once: true }}
+                                className="relative"
+                            >
+                                <div className="p-8 bg-white dark:bg-card rounded-3xl border border-gray-200 dark:border-border shadow-xl">
+                                    <h3 className="text-2xl font-bold mb-2">Get your free audit</h3>
+                                    <p className="text-gray-600 dark:text-secondary mb-6">
+                                        Receive a personalized 30-minute strategy session to map out your digital authority.
+                                    </p>
+
+                                    <form className="space-y-4" onSubmit={handleSubmit}>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleInputChange}
+                                            placeholder="Full name"
+                                            required
+                                            className="w-full px-4 py-3 bg-gray-50 dark:bg-background border border-gray-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50"
+                                        />
+                                        <input
+                                            type="tel"
+                                            name="contact"
+                                            value={formData.contact}
+                                            onChange={handleInputChange}
+                                            placeholder="Contact number"
+                                            required
+                                            className="w-full px-4 py-3 bg-gray-50 dark:bg-background border border-gray-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50"
+                                        />
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleInputChange}
+                                            placeholder="Work email"
+                                            required
+                                            className="w-full px-4 py-3 bg-gray-50 dark:bg-background border border-gray-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50"
+                                        />
+                                        <select
+                                            name="role"
+                                            value={formData.role}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="w-full px-4 py-3 bg-gray-50 dark:bg-background border border-gray-200 dark:border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50"
+                                        >
+                                            <option value="Select your role" disabled>Select your role</option>
+                                            <option value="Founder / CEO">Founder / CEO</option>
+                                            <option value="Executive">Executive</option>
+                                            <option value="Professional">Professional</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                        <motion.button
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                            type="submit"
+                                            className="w-full px-6 py-4 bg-accent text-white rounded-xl font-medium text-lg hover:bg-indigo-600 transition-all shadow-lg"
+                                        >
+                                            Claim your free audit
+                                        </motion.button>
+                                    </form>
+
+
+
+                                    {/* Alternative simple button version (if form is too much) */}
+                                    {/* <div className="text-center">
+            <motion.button
+              whileHover={scaleOnHover}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-4 bg-accent text-white rounded-xl font-medium text-lg hover:bg-indigo-600 transition-all shadow-lg"
+            >
+              Launch Identity
+            </motion.button>
+            <p className="text-sm text-gray-500 dark:text-secondary mt-4">
+              ✨ Join 120+ industry leaders
+            </p>
+          </div> */}
+                                </div>
+
+                                {/* Decorative element */}
+                                <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-accent/10 rounded-full blur-3xl -z-10"></div>
+                            </motion.div>
+                        </div>
+
+
+                    </div>
+                </section>
+
+                {/* VISION FOOTER */}
+                <footer className="py-10 sm:py-16 px-4 sm:px-6 md:px-10 border-t border-gray-200 dark:border-border">
+                    <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-gray-600 dark:text-secondary text-sm sm:text-base">
+                        <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4 md:mb-0">JIGAR VAGHANI</p>
+                        <p className="text-xs sm:text-sm">© 2025 JIGAR VAGHANI Profesional Identity (UniProId), managed & developed by uniTechnostack</p>
+                        <p className="text-xs sm:text-sm mt-4 md:mt-0">Crafted for modern leaders</p>
+                    </div>
+                </footer>
             </div>
+        </div>
+    );
+};
 
-            {/* Bottom Gradient Accent */}
-            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50"></div>
+// Counter component with proper animation
+const Counter = ({ value, suffix = '' }) => {
+    const count = useMotionValue(0);
+    const rounded = useTransform(count, (latest) => Math.round(latest));
+    const displayValue = useTransform(rounded, (latest) => `${latest}${suffix}`);
 
-            {/* Responsive Styles */}
-            <style jsx>{`
-                @keyframes gradient {
-                    0%, 100% { background-position: 0% 50%; }
-                    50% { background-position: 100% 50%; }
-                }
-                .animate-gradient {
-                    background-size: 200% 200%;
-                    animation: gradient 3s ease infinite;
-                }
-                
-                /* Responsive typography */
-                @media (max-width: 640px) {
-                    h1 {
-                        font-size: 2.5rem !important;
-                    }
-                }
-            `}</style>
-        </section>
-    )
-}
+    useEffect(() => {
+        const controls = animate(count, value, { duration: 2, ease: "easeOut" });
+        return controls.stop;
+    }, [value, count]);
+
+    return <motion.h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">{displayValue}</motion.h2>;
+};
+
+export default RealEstateDigitalIdentity;

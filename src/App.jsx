@@ -45,7 +45,7 @@ export default function App() {
       ? 'bg-gradient-to-b from-soft-white to-gray-50 text-soft-black'
       : 'bg-gradient-to-b from-soft-black to-gray-900 text-white'
       }`}>
-      <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+      {/* <ThemeToggle theme={theme} toggleTheme={toggleTheme} /> */}
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -59,30 +59,30 @@ export default function App() {
           </section>
 
           {/* Quick Actions (Sticky Bottom) */}
-          <QuickActions profile={profile} />
+          {/* <QuickActions profile={profile} /> */}
 
           {/* About Section */}
-          <section id="about" className="min-h-screen flex items-center ">
-            <AboutSection profile={profile} />
-          </section>
+
+          <AboutSection profile={profile} />
+
 
           {/* Social Links */}
-          <section id="social" className="min-h-screen flex items-center ">
+          {/* <section id="social" className="min-h-screen flex items-center ">
             <SocialLinks profile={profile} />
-          </section>
+          </section> */}
 
 
 
           {/* Trust Section */}
-          <section id="trust" className="min-h-screen flex items-center">
+          {/* <section id="trust" className="min-h-screen flex items-center">
             <TrustSection profile={profile} />
-          </section>
+          </section> */}
           {/* QR Code */}
-          <section id="qr" className="min-h-screen flex items-center">
+          {/* <section id="qr" className="min-h-screen flex items-center">
             <QRCodeSection profile={profile} />
-          </section>
+          </section> */}
           {/* Footer */}
-          <Footer />
+          {/* <Footer /> */}
         </motion.div>
       </AnimatePresence>
     </div>
