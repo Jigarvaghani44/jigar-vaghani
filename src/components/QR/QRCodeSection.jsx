@@ -9,14 +9,20 @@ import {
     Copy,
     CheckCircle2,
     Sparkles,
-    Zap,
     Shield,
     ScanLine,
     Phone,
     Clock,
     Globe,
     Maximize2,
-    X
+    X,
+    Facebook,
+    Twitter,
+    Linkedin,
+    Mail,
+    MessageCircle,
+    Send,
+    Link2
 } from 'lucide-react'
 import QRCode from 'react-qr-code'
 
@@ -28,17 +34,23 @@ export default function QRCodeSection({ profile }) {
     const [qrTheme, setQrTheme] = useState('gold')
     const [scanAnimation, setScanAnimation] = useState(false)
     const [isMobile, setIsMobile] = useState(false)
+    const [showShareMenu, setShowShareMenu] = useState(false)
     const qrRef = useRef(null)
     const modalQrRef = useRef(null)
 
     const qrValue = window.location.href
+    // Use fallback values in case profile is undefined
+    const profileName = profile?.name || 'User'
+    const profileTitle = profile?.title || ''
+    const profileEmail = profile?.email || ''
+    const profilePhone = profile?.phone || ''
+    const shareText = `Check out ${profileName}'s digital business card!`
 
     // Check screen size
     useEffect(() => {
         const checkScreenSize = () => {
             setIsMobile(window.innerWidth < 768)
         }
-
         checkScreenSize()
         window.addEventListener('resize', checkScreenSize)
         return () => window.removeEventListener('resize', checkScreenSize)
@@ -73,54 +85,85 @@ export default function QRCodeSection({ profile }) {
 
     // Helper to convert SVG to canvas download
     const downloadQRFromRef = async (ref, fileNameSuffix = '') => {
-        if (!ref.current) return
+        if (!ref.current) {
+            console.error('QR ref not found')
+            return
+        }
 
         const svg = ref.current.querySelector('svg')
-        if (!svg) return
+        if (!svg) {
+            console.error('SVG not found in ref')
+            return
+        }
+
+        const svgRect = svg.getBoundingClientRect()
+        const width = svgRect.width || 200
+        const height = svgRect.height || 200
 
         const svgData = new XMLSerializer().serializeToString(svg)
+
+        const scale = isMobile ? 1.5 : 2
         const canvas = document.createElement('canvas')
+        canvas.width = width * scale
+        canvas.height = height * scale
         const ctx = canvas.getContext('2d')
+
         const img = new Image()
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' })
+        const url = URL.createObjectURL(svgBlob)
 
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             img.onload = () => {
-                // Set appropriate size based on device
-                const scale = isMobile ? 1.5 : 2
-                canvas.width = img.width * scale
-                canvas.height = img.height * scale
-                ctx.scale(scale, scale)
-                ctx.drawImage(img, 0, 0)
+                ctx.drawImage(img, 0, 0, width * scale, height * scale)
 
-                // Add watermark with responsive font size
+                // Add watermark with fallback if profile is undefined
                 ctx.fillStyle = currentTheme.primary + '20'
                 ctx.font = `bold ${isMobile ? '16px' : '24px'} sans-serif`
-                ctx.fillText(profile.name, 20, canvas.height / (2 * scale) - 30)
+                ctx.fillText(profileName, 20, canvas.height / 2 - 30)
                 ctx.font = `${isMobile ? '12px' : '16px'} sans-serif`
-                ctx.fillText('Digital Business Card', 20, canvas.height / (2 * scale))
-                ctx.fillText(new Date().getFullYear(), 20, canvas.height / (2 * scale) + 20)
+                ctx.fillText('Digital Business Card', 20, canvas.height / 2)
+                ctx.fillText(new Date().getFullYear(), 20, canvas.height / 2 + 20)
 
                 const pngFile = canvas.toDataURL('image/png')
                 const downloadLink = document.createElement('a')
-                downloadLink.download = `${profile.name.replace(/\s+/g, '_')}_Digital_Card${fileNameSuffix}.png`
+                downloadLink.download = `${profileName.replace(/\s+/g, '_')}_Digital_Card${fileNameSuffix}.png`
                 downloadLink.href = pngFile
                 downloadLink.click()
+
+                URL.revokeObjectURL(url)
                 resolve()
             }
-            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)))
+            img.onerror = (err) => {
+                console.error('Failed to load SVG image:', err)
+                URL.revokeObjectURL(url)
+                reject(err)
+            }
+            img.src = url
         })
     }
 
     const downloadQR = async () => {
         setIsDownloading(true)
-        await downloadQRFromRef(qrRef)
-        setIsDownloading(false)
+        try {
+            await downloadQRFromRef(qrRef)
+        } catch (error) {
+            console.error('Download failed:', error)
+            alert('Failed to download QR code. Please try again.')
+        } finally {
+            setIsDownloading(false)
+        }
     }
 
     const downloadModalQR = async () => {
         setIsDownloadingModal(true)
-        await downloadQRFromRef(modalQrRef, '_modal')
-        setIsDownloadingModal(false)
+        try {
+            await downloadQRFromRef(modalQrRef, '_modal')
+        } catch (error) {
+            console.error('Modal download failed:', error)
+            alert('Failed to download QR code. Please try again.')
+        } finally {
+            setIsDownloadingModal(false)
+        }
     }
 
     const copyToClipboard = () => {
@@ -129,20 +172,49 @@ export default function QRCodeSection({ profile }) {
         setTimeout(() => setIsCopied(false), 2000)
     }
 
-    const shareProfile = async () => {
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: `${profile.name} - Digital Business Card`,
-                    text: `Scan to connect with ${profile.name}`,
-                    url: qrValue,
-                })
-            } catch (error) {
-                copyToClipboard()
-            }
-        } else {
-            copyToClipboard()
+    // Share menu items
+    const shareItems = [
+        {
+            name: 'WhatsApp',
+            icon: MessageCircle,
+            color: 'bg-green-500',
+            url: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + qrValue)}`
+        },
+        {
+            name: 'Facebook',
+            icon: Facebook,
+            color: 'bg-blue-600',
+            url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(qrValue)}`
+        },
+        {
+            name: 'Twitter',
+            icon: Twitter,
+            color: 'bg-sky-500',
+            url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(qrValue)}`
+        },
+        {
+            name: 'LinkedIn',
+            icon: Linkedin,
+            color: 'bg-blue-700',
+            url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(qrValue)}`
+        },
+        {
+            name: 'Telegram',
+            icon: Send,
+            color: 'bg-sky-600',
+            url: `https://t.me/share/url?url=${encodeURIComponent(qrValue)}&text=${encodeURIComponent(shareText)}`
+        },
+        {
+            name: 'Email',
+            icon: Mail,
+            color: 'bg-gray-600',
+            url: `mailto:?subject=${encodeURIComponent(profileName + "'s Digital Business Card")}&body=${encodeURIComponent(shareText + '\n\n' + qrValue)}`
         }
+    ]
+
+    const handleShare = (url) => {
+        window.open(url, '_blank', 'noopener,noreferrer')
+        setShowShareMenu(false)
     }
 
     const scanAnimationEffect = () => {
@@ -154,7 +226,6 @@ export default function QRCodeSection({ profile }) {
         const interval = setInterval(() => {
             scanAnimationEffect()
         }, 3000)
-
         return () => clearInterval(interval)
     }, [])
 
@@ -178,7 +249,6 @@ export default function QRCodeSection({ profile }) {
                     transition={{ duration: 10, repeat: Infinity, delay: 2 }}
                     className="absolute bottom-1/4 -right-10 sm:right-1/4 w-[250px] h-[250px] sm:w-[500px] sm:h-[500px] rounded-full bg-gradient-to-bl from-[#0A2540]/10 to-transparent dark:from-[#D4AF37]/10 blur-2xl sm:blur-3xl"
                 />
-
                 {[...Array(isMobile ? 4 : 8)].map((_, i) => (
                     <motion.div
                         key={i}
@@ -350,6 +420,7 @@ export default function QRCodeSection({ profile }) {
                         className="w-full lg:w-1/2"
                     >
                         <div className="space-y-6 sm:space-y-8">
+                            {/* Instructions */}
                             <div className="bg-gradient-to-br from-white/90 to-gray-50/90 dark:from-gray-900/90 dark:to-gray-800/90 backdrop-blur-sm rounded-xl sm:rounded-2xl lg:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-xl border border-gray-200 dark:border-gray-700">
                                 <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-[#0A2540] dark:text-white mb-4 sm:mb-6">
                                     How to Connect
@@ -385,6 +456,7 @@ export default function QRCodeSection({ profile }) {
                                 </div>
                             </div>
 
+                            {/* Action Buttons */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                 <motion.button
                                     whileHover={{ scale: 1.03, y: -1 }}
@@ -410,7 +482,7 @@ export default function QRCodeSection({ profile }) {
                                 <motion.button
                                     whileHover={{ scale: 1.03, y: -1 }}
                                     whileTap={{ scale: 0.97 }}
-                                    onClick={shareProfile}
+                                    onClick={() => setShowShareMenu(true)}
                                     className="group relative px-4 py-3 sm:px-6 sm:py-4 rounded-xl sm:rounded-2xl border-2 border-[#D4AF37] bg-transparent hover:bg-[#D4AF37]/10 transition-all"
                                 >
                                     <div className="flex items-center justify-center gap-2 sm:gap-3">
@@ -450,6 +522,79 @@ export default function QRCodeSection({ profile }) {
                     </motion.div>
                 </div>
             </div>
+
+            {/* Share Menu Modal */}
+            <AnimatePresence>
+                {showShareMenu && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+                        onClick={() => setShowShareMenu(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            transition={{ type: "spring", damping: 25 }}
+                            className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-6"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <button
+                                onClick={() => setShowShareMenu(false)}
+                                className="absolute top-4 right-4 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                            >
+                                <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                            </button>
+
+                            <h3 className="text-xl font-bold text-[#0A2540] dark:text-white mb-2">
+                                Share Profile
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-400 mb-6">
+                                Choose a platform to share {profileName}'s digital business card
+                            </p>
+
+                            <div className="grid grid-cols-3 gap-4">
+                                {shareItems.map((item) => (
+                                    <motion.button
+                                        key={item.name}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={() => handleShare(item.url)}
+                                        className="flex flex-col items-center gap-2 p-3 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                    >
+                                        <div className={`p-3 rounded-full ${item.color} text-white`}>
+                                            <item.icon className="w-5 h-5" />
+                                        </div>
+                                        <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                                            {item.name}
+                                        </span>
+                                    </motion.button>
+                                ))}
+
+                                {/* Copy link button inside share menu */}
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => {
+                                        copyToClipboard()
+                                        setShowShareMenu(false)
+                                    }}
+                                    className="flex flex-col items-center gap-2 p-3 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                >
+                                    <div className="p-3 rounded-full bg-gray-600 text-white">
+                                        <Link2 className="w-5 h-5" />
+                                    </div>
+                                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                                        Copy Link
+                                    </span>
+                                </motion.button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Expanded QR Modal */}
             <AnimatePresence>
@@ -512,13 +657,13 @@ export default function QRCodeSection({ profile }) {
 
                                 <div className="mt-6 sm:mt-8 text-center">
                                     <h4 className="text-lg sm:text-xl font-bold text-[#0A2540] dark:text-white">
-                                        {profile.name}
+                                        {profileName}
                                     </h4>
                                     <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
-                                        {profile.title}
+                                        {profileTitle}
                                     </p>
                                     <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-500 mt-1 sm:mt-2">
-                                        {profile.email} • {profile.phone}
+                                        {profileEmail} • {profilePhone}
                                     </p>
                                 </div>
 
