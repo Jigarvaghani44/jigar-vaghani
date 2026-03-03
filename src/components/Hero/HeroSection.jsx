@@ -8,6 +8,7 @@ import {
 } from 'react-icons/fa';
 import myProfessionalImage from '../../assets/my profational pic.png'; // Ensure file has no spaces
 import JigarLogo from '../../assets/jigar logo.png';
+import QRCodeSection from '../QR/QRCodeSection';
 
 const RealEstateDigitalIdentity = () => {
     const [scrolled, setScrolled] = useState(false);
@@ -827,7 +828,7 @@ END:VCARD`;
 
                     </div>
                 </section>
-
+                <QRCodeSection />
 
 
                 {/* FINAL CTA – redesigned as high-conversion lead magnet */}
