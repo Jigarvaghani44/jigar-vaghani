@@ -138,11 +138,12 @@ END:VCARD`;
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', 'jigar-vaghani.vcf');
+        link.download = "Jigar_Vaghani.vcf"; // Name of the vCard file
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
+        // Clean up the blob URL
+        URL.revokeObjectURL(url);
     };
 
     return (

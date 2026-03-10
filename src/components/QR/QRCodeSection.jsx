@@ -25,6 +25,8 @@ import {
     Link2
 } from 'lucide-react'
 import QRCode from 'react-qr-code'
+import html2canvas from 'html2canvas'
+import JigarLogo from '../../assets/jigar logo.png';
 
 export default function QRCodeSection({ profile }) {
     const [isExpanded, setIsExpanded] = useState(false)
@@ -38,12 +40,17 @@ export default function QRCodeSection({ profile }) {
     const qrRef = useRef(null)
     const modalQrRef = useRef(null)
 
+    // NEW: ref for the hidden card we'll capture
+    const cardRef = useRef(null)
     const qrValue = window.location.href
     // Use fallback values in case profile is undefined
-    const profileName = profile?.name || 'User'
-    const profileTitle = profile?.title || ''
-    const profileEmail = profile?.email || ''
-    const profilePhone = profile?.phone || ''
+    const profileName = 'Jigar Vaghani' || 'User'
+    const profileTitle = 'Digital Identity Strategist | Back-end Developer | Software Architect' || ''
+    const profileEmail = 'jigarvaghani44@gmail.com' || ''
+    const profilePhone = '+91 9510558938' || ''
+    const profileOrg = 'UniTechnoStack' || 'Company'
+    const profileWebsite = 'https://www.jigarvaghani.com' || 'example.com'
+    const profilePhoto = JigarLogo || '/default-avatar.png' // fallback image
     const shareText = `Check out ${profileName}'s digital business card!`
 
     // Check screen size
@@ -82,7 +89,83 @@ export default function QRCodeSection({ profile }) {
     }
 
     const currentTheme = themes[qrTheme]
+    // NEW: vCard generation function (reused for both wallet buttons)
+    const generateVCard = () => {
+        // Split name for vCard N property (Last;First;Middle;Prefix;Suffix)
+        const nameParts = profileName.trim().split(' ')
+        const firstName = nameParts[0] || ''
+        const lastName = nameParts.slice(1).join(' ') || ''
 
+        // Basic vCard – add more fields as needed
+        let vCard = `BEGIN:VCARD
+VERSION:3.0
+N:${lastName};${firstName};;;
+FN:${profileName}
+ORG:${profileOrg}
+TITLE:${profileTitle}
+TEL;TYPE=CELL,VOICE:${profilePhone}
+EMAIL;TYPE=WORK,INTERNET:${profileEmail}
+URL:${profileWebsite}
+`
+
+        // Optionally add photo (if you have a base64 version or a URL)
+        // Note: Most contact apps on iOS/Android will not automatically download a remote image.
+        // For simplicity we omit PHOTO; you could add it if you have a data URI.
+        // vCard += `PHOTO;ENCODING=b;TYPE=JPEG:...` 
+
+        vCard += `END:VCARD`
+        return vCard
+    }
+
+    const saveAsVCard = () => {
+        const vCardData = generateVCard()
+        const blob = new Blob([vCardData], { type: 'text/vcard' })
+        const url = URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `${profileName.replace(/\s+/g, '_')}.vcf`
+        document.body.appendChild(link)
+        link.click()
+        setTimeout(() => {
+            document.body.removeChild(link)
+            URL.revokeObjectURL(url)
+        }, 100)
+    }
+
+    // NEW: Handlers for wallet buttons (both do the same for now)
+    // Replace the existing addToAppleWallet function
+    const addToAppleWallet = async () => {
+        try {
+            // URL to your .pkpass file – adjust the path as needed
+            // For a static file in the public folder:
+            const passUrl = '/wallet/4A81A9CA-55D6-4B11-AA5B-C5A80D2D4C17.pkpass';
+
+            // If the file is generated per user, use a dynamic endpoint:
+            // const passUrl = `/api/wallet/apple/${userId}`;
+
+            // Fetch the file
+            const response = await fetch(passUrl);
+            if (!response.ok) throw new Error('Failed to fetch pass');
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'Business_Card.pkpass'; // filename for download
+            document.body.appendChild(link);
+            link.click();
+
+            // Clean up
+            setTimeout(() => {
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+            }, 100);
+        } catch (error) {
+            console.error('Error downloading Apple Wallet pass:', error);
+            alert('Failed to download pass. Please try again later.');
+        }
+    };
+    const addToGoogleWallet = saveAsVCard
     // Helper to convert SVG to canvas download
     const downloadQRFromRef = async (ref, fileNameSuffix = '') => {
         if (!ref.current) {
@@ -143,12 +226,26 @@ export default function QRCodeSection({ profile }) {
     }
 
     const downloadQR = async () => {
+        if (!cardRef.current) {
+            console.error('Card ref not found')
+            return
+        }
         setIsDownloading(true)
         try {
-            await downloadQRFromRef(qrRef)
+            const canvas = await html2canvas(cardRef.current, {
+                scale: 2,                // high resolution
+                backgroundColor: '#ffffff',
+                allowTaint: false,
+                useCORS: true,            // helps with external images
+                logging: false,
+            })
+            const link = document.createElement('a')
+            link.download = `${profileName.replace(/\s+/g, '_')}_Business_Card.png`
+            link.href = canvas.toDataURL('image/png')
+            link.click()
         } catch (error) {
-            console.error('Download failed:', error)
-            alert('Failed to download QR code. Please try again.')
+            console.error('Failed to generate card image:', error)
+            alert('Failed to generate card. Please try again.')
         } finally {
             setIsDownloading(false)
         }
@@ -271,6 +368,73 @@ export default function QRCodeSection({ profile }) {
                         }}
                     />
                 ))}
+            </div>
+            {/* ===== NEW: Hidden Card for Image Capture ===== */}
+            <div
+                ref={cardRef}
+                style={{
+                    position: 'absolute',
+                    left: '-9999px',
+                    top: 0,
+                    width: '400px',          // fixed width for consistent capture
+                    padding: '24px',
+                    background: 'white',
+                    borderRadius: '24px',
+                    boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                }}
+                className="font-sans"
+            >
+                <div className="flex flex-col items-center">
+                    {/* Profile Image */}
+                    <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-[#D4AF37] mb-4">
+                        <img
+                            src={profilePhoto}
+                            alt={profileName}
+                            className="w-full h-full object-cover"
+                            crossOrigin="anonymous" // helps with CORS if image is on another domain
+                        />
+                    </div>
+
+                    {/* Name */}
+                    <h3 className="text-2xl font-bold text-[#0A2540] text-center">
+                        {profileName}
+                    </h3>
+
+                    {/* Job Title & Organization */}
+                    <p className="text-gray-600 mt-1 text-center">
+                        {profileTitle} at {profileOrg}
+                    </p>
+
+                    {/* Contact Details */}
+                    <div className="w-full mt-4 space-y-2 text-sm">
+                        <div className="flex items-center gap-2">
+                            <Phone className="w-4 h-4 text-[#D4AF37]" />
+                            <span>{profilePhone}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Mail className="w-4 h-4 text-[#D4AF37]" />
+                            <span>{profileEmail}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Globe className="w-4 h-4 text-[#D4AF37]" />
+                            <span>{profileWebsite}</span>
+                        </div>
+                    </div>
+
+                    {/* QR Code */}
+                    <div className="mt-4 p-2 bg-white rounded-lg">
+                        <QRCode
+                            value={qrValue}
+                            size={120}
+                            fgColor={currentTheme.fgColor}
+                            bgColor={currentTheme.bgColor}
+                            level="H"
+                        />
+                    </div>
+
+                    {/* Footer */}
+                    <p className="text-xs text-gray-400 mt-4">Scan to connect</p>
+                </div>
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto">
@@ -516,6 +680,24 @@ export default function QRCodeSection({ profile }) {
                                             </>
                                         )}
                                     </div>
+                                </motion.button>
+                            </div>
+                            <div className="mt-6 grid grid-cols-2 gap-3">
+                                <motion.button
+                                    whileHover={{ scale: 1.03 }}
+                                    whileTap={{ scale: 0.97 }}
+                                    onClick={addToAppleWallet}
+                                    className="px-4 py-3 rounded-xl bg-black text-white font-semibold text-sm shadow-lg hover:shadow-xl transition-all"
+                                >
+                                    Add to Apple Wallet
+                                </motion.button>
+                                <motion.button
+                                    whileHover={{ scale: 1.03 }}
+                                    whileTap={{ scale: 0.97 }}
+                                    onClick={addToGoogleWallet}
+                                    className="px-4 py-3 rounded-xl bg-blue-600 text-white font-semibold text-sm shadow-lg hover:shadow-xl transition-all"
+                                >
+                                    Add to Google Wallet
                                 </motion.button>
                             </div>
                         </div>
